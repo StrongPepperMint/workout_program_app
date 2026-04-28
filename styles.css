@@ -148,6 +148,10 @@ button {
   padding: 16px;
 }
 
+.summary-card-compact {
+  padding: 12px 14px;
+}
+
 .install-card {
   margin-top: 12px;
 }
@@ -166,6 +170,26 @@ button {
   margin: 6px 0 4px;
   font-size: 1.15rem;
   font-weight: 700;
+}
+
+.summary-card-compact .summary-label,
+.summary-card-compact .summary-value,
+.summary-card-compact .summary-note {
+  line-height: 1.2;
+}
+
+.summary-card-compact .summary-label {
+  font-size: 0.74rem;
+}
+
+.summary-card-compact .summary-value {
+  margin: 4px 0;
+  font-size: 0.92rem;
+}
+
+.summary-card-compact .summary-note {
+  margin: 0;
+  font-size: 0.92rem;
 }
 
 .main-content {
@@ -794,7 +818,7 @@ input {
     grid-auto-columns: max-content;
     overflow-x: auto;
     margin: 12px 0;
-    padding: 0 44px 8px 0;
+    padding: 0 78px 8px 0;
     scrollbar-width: thin;
     scrollbar-color: rgba(111, 101, 93, 0.55) transparent;
   }
@@ -804,10 +828,10 @@ input {
     position: absolute;
     top: 0;
     right: 0;
-    width: 56px;
+    width: 96px;
     height: calc(100% - 8px);
     pointer-events: none;
-    background: linear-gradient(90deg, rgba(246, 238, 229, 0), rgba(246, 238, 229, 0.96) 55%, rgba(246, 238, 229, 1));
+    background: linear-gradient(90deg, rgba(246, 238, 229, 0), rgba(246, 238, 229, 0.86) 35%, rgba(246, 238, 229, 1));
   }
 
   .nav::-webkit-scrollbar {
@@ -826,20 +850,25 @@ input {
 
   .nav-scroll-hint {
     display: block;
+    margin: -8px 0 14px;
+    color: var(--accent-deep);
+    font-size: 0.76rem;
+    font-weight: 700;
   }
 
   .nav-more-hint {
     display: block;
     position: absolute;
     top: 50%;
-    right: 6px;
+    right: 8px;
     transform: translateY(-68%);
-    padding: 4px 6px;
+    padding: 6px 10px;
     border-radius: 999px;
-    color: var(--accent-deep);
-    font-size: 0.68rem;
+    color: #fff8f4;
+    font-size: 0.78rem;
     font-weight: 700;
-    background: rgba(255, 248, 244, 0.88);
+    background: rgba(180, 76, 47, 0.96);
+    box-shadow: 0 10px 20px rgba(180, 76, 47, 0.18);
     pointer-events: none;
     z-index: 1;
   }
