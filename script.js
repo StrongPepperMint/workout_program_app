@@ -55,10 +55,15 @@ const installCard = document.getElementById("install-card");
 const installTitle = document.getElementById("install-title");
 const installCopy = document.getElementById("install-copy");
 const installAppButton = document.getElementById("install-app-button");
+const updateCard = document.getElementById("update-card");
+const updateTitle = document.getElementById("update-title");
+const updateCopy = document.getElementById("update-copy");
+const applyUpdateButton = document.getElementById("apply-update-button");
 
 let historyViewMode = "session";
 let historyExerciseFilter = "all";
 let deferredInstallPrompt = null;
+let waitingServiceWorker = null;
 const HIGH_VOLUME_REP_EQUIVALENTS = [18, 17.5, 15, 14.5, 12, 11.5, 11, 10];
 const HIGH_VOLUME_TEMPLATES = [
   { summary: "4x12", rpeTarget: 6, sets: [{ reps: 12, count: 4, percent: 1 }] },
@@ -200,6 +205,26 @@ function updateInstallCard() {
   installTitle.textContent = "설치 안내";
   installCopy.textContent = "배포 후 HTTPS 주소로 열면 브라우저 메뉴나 주소창의 설치 기능으로 홈 화면에 추가할 수 있습니다.";
   installAppButton.hidden = true;
+}
+
+function updateUpdateCard() {
+  if (!updateCard || !updateTitle || !updateCopy || !applyUpdateButton) {
+    return;
+  }
+
+  if (!waitingServiceWorker) {
+    updateCard.hidden = true;
+    return;
+  }
+
+  updateCard.hidden = false;
+  updateTitle.textContent = "새 버전이 준비됨";
+  updateCopy.textContent = "업데이트를 누르면 최신 HTML, 스타일, 스크립트로 다시 불러옵니다.";
+}
+
+function promptForAppUpdate(registration) {
+  waitingServiceWorker = registration?.waiting || null;
+  updateUpdateCard();
 }
 
 function roundToLoadableWeight(value) {
@@ -2255,6 +2280,7 @@ function rerender() {
   renderPrScreen();
   renderHistory();
   updateInstallCard();
+  updateUpdateCard();
 }
 
 function syncStateFromSetupInputs() {
@@ -2516,6 +2542,14 @@ installAppButton?.addEventListener("click", async () => {
   updateInstallCard();
 });
 
+applyUpdateButton?.addEventListener("click", () => {
+  if (!waitingServiceWorker) {
+    return;
+  }
+
+  waitingServiceWorker.postMessage({ type: "SKIP_WAITING" });
+});
+
 exportHistoryButton?.addEventListener("click", () => {
   exportHistoryAsCsv();
 });
@@ -2542,7 +2576,29 @@ window.addEventListener("appinstalled", () => {
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./service-worker.js").catch(() => {
+    navigator.serviceWorker.register("./service-worker.js").then((registration) => {
+      if (registration.waiting) {
+        promptForAppUpdate(registration);
+      }
+
+      registration.addEventListener("updatefound", () => {
+        const newWorker = registration.installing;
+        if (!newWorker) {
+          return;
+        }
+
+        newWorker.addEventListener("statechange", () => {
+          if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
+            promptForAppUpdate(registration);
+          }
+        });
+      });
+
+      navigator.serviceWorker.addEventListener("controllerchange", () => {
+        waitingServiceWorker = null;
+        window.location.reload();
+      });
+    }).catch(() => {
       // Ignore registration failures in unsupported or local-file contexts.
     });
   });
