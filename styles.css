@@ -94,6 +94,14 @@ button {
   margin: 24px 0;
 }
 
+.nav-wrap {
+  position: relative;
+}
+
+.nav-more-hint {
+  display: none;
+}
+
 .nav-scroll-hint {
   display: none;
   margin: -12px 0 16px;
@@ -786,9 +794,20 @@ input {
     grid-auto-columns: max-content;
     overflow-x: auto;
     margin: 12px 0;
-    padding-bottom: 6px;
+    padding: 0 44px 8px 0;
     scrollbar-width: thin;
     scrollbar-color: rgba(111, 101, 93, 0.55) transparent;
+  }
+
+  .nav-wrap::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 56px;
+    height: calc(100% - 8px);
+    pointer-events: none;
+    background: linear-gradient(90deg, rgba(246, 238, 229, 0), rgba(246, 238, 229, 0.96) 55%, rgba(246, 238, 229, 1));
   }
 
   .nav::-webkit-scrollbar {
@@ -807,6 +826,22 @@ input {
 
   .nav-scroll-hint {
     display: block;
+  }
+
+  .nav-more-hint {
+    display: block;
+    position: absolute;
+    top: 50%;
+    right: 6px;
+    transform: translateY(-68%);
+    padding: 4px 6px;
+    border-radius: 999px;
+    color: var(--accent-deep);
+    font-size: 0.68rem;
+    font-weight: 700;
+    background: rgba(255, 248, 244, 0.88);
+    pointer-events: none;
+    z-index: 1;
   }
 
   .hero-card,
