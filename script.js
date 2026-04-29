@@ -170,6 +170,22 @@ function showScreen(screenName) {
   }
 }
 
+function scrollToTodayScreenBottom() {
+  const todayScreen = document.getElementById("screen-today");
+  if (!todayScreen) {
+    return;
+  }
+
+  window.requestAnimationFrame(() => {
+    window.requestAnimationFrame(() => {
+      window.scrollTo({
+        top: todayScreen.offsetTop + todayScreen.scrollHeight,
+        behavior: "smooth",
+      });
+    });
+  });
+}
+
 function isIosLikeDevice() {
   return /iphone|ipad|ipod/i.test(window.navigator.userAgent);
 }
@@ -2412,7 +2428,8 @@ saveExerciseButton.addEventListener("click", () => {
   appState.selectedExercise = navigation.nextExercise || exerciseResult.exercise;
   saveState();
   rerender();
-  showScreen("record");
+  showScreen("today");
+  scrollToTodayScreenBottom();
 });
 
 backToSessionButton.addEventListener("click", () => {
