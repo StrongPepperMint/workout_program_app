@@ -911,6 +911,14 @@ input {
     font-size: 0.82rem;
   }
 
+  #screen-setup .section-title-row {
+    margin-bottom: 4px;
+  }
+
+  #screen-setup .section-title-row p {
+    margin: 0;
+  }
+
   .section-title-row {
     margin-bottom: 6px;
     gap: 6px;
@@ -966,7 +974,39 @@ input {
   }
 
   #screen-setup .lift-table {
+    gap: 3px;
+    margin-top: 2px;
+  }
+
+  #screen-setup .lift-row {
     gap: 5px;
+    padding: 6px 8px;
+  }
+
+  #screen-setup .lift-row span:first-child {
+    margin-bottom: 1px;
+  }
+
+  #screen-setup .card:nth-of-type(3) .muted,
+  #screen-setup .card:nth-of-type(4) .muted {
+    line-height: 1.12;
+  }
+
+  #screen-setup .preview-grid {
+    gap: 4px;
+    margin-top: 2px;
+  }
+
+  #screen-setup .preview-item {
+    padding: 6px 8px;
+  }
+
+  #screen-setup .preview-item .preview-title {
+    margin-bottom: 1px;
+  }
+
+  #screen-setup .preview-item .preview-main {
+    margin-bottom: 1px;
   }
 
   .sets-row {
