@@ -2429,6 +2429,21 @@ nextExerciseButton?.addEventListener("click", () => {
 });
 
 completeSessionButton.addEventListener("click", () => {
+  autosaveCurrentExerciseDraft();
+
+  const requiredExercises = getRequiredExercisesForCurrentSession();
+  const unrecordedExercises = requiredExercises.filter(
+    (exercise) => !getSessionRecord(exercise),
+  );
+
+  if (unrecordedExercises.length) {
+    const shouldFinish = window.confirm("기록되지 않은 운동이 있습니다. 세션을 마무리하시겠습니까?");
+    if (!shouldFinish) {
+      showScreen("today");
+      return;
+    }
+  }
+
   const workoutResult = collectWorkoutResult();
   const completedBefore = { ...appState.completedExercises };
 
