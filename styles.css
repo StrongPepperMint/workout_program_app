@@ -368,7 +368,11 @@ input {
 }
 
 .exercise-card {
-  padding: 16px;
+  padding: 14px;
+  display: grid;
+  gap: 6px;
+  align-content: start;
+  min-height: 210px;
 }
 
 .exercise-status {
@@ -396,9 +400,13 @@ input {
 }
 
 .exercise-actions {
-  margin-top: 10px;
+  margin-top: auto;
   display: flex;
   gap: 10px;
+}
+
+.today-schedule-card {
+  margin-bottom: 12px;
 }
 
 .preview-grid {
@@ -807,6 +815,11 @@ input {
     grid-template-columns: 1fr;
   }
 
+  #today-exercise-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
   .nav {
     grid-auto-flow: column;
     grid-auto-columns: max-content;
@@ -1044,6 +1057,48 @@ input {
   .backoff-actions {
     grid-template-columns: 1fr;
     display: grid;
+  }
+
+  #today-exercise-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .exercise-card {
+    min-height: 188px;
+    padding: 12px 10px;
+    gap: 5px;
+  }
+
+  .exercise-main {
+    margin-top: 2px;
+    font-size: 1.08rem;
+  }
+
+  .exercise-sub {
+    font-size: 0.74rem;
+    line-height: 1.12;
+  }
+
+  .exercise-status {
+    margin-top: 2px;
+    padding: 3px 7px;
+    font-size: 0.64rem;
+  }
+
+  .exercise-plan {
+    margin-top: 2px;
+    font-size: 0.7rem;
+    line-height: 1.12;
+  }
+
+  .exercise-actions {
+    margin-top: auto;
+  }
+
+  .exercise-actions .secondary-button {
+    padding: 8px 10px;
+    font-size: 0.78rem;
   }
 
   #screen-setup .choice-grid {

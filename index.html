@@ -39,15 +39,6 @@
           <p class="summary-note" id="summary-note">기준 기록을 저장하면 이번 세션 운동이 계산됩니다.</p>
         </section>
 
-        <section class="summary-card summary-card-compact install-card" id="install-card" hidden>
-          <p class="summary-label">앱 설치</p>
-          <p class="summary-value" id="install-title">홈 화면에 추가</p>
-          <p class="summary-note" id="install-copy">이 기기에서 더 쉽게 열 수 있도록 설치할 수 있습니다.</p>
-          <div class="install-actions">
-            <button class="primary-button" id="install-app-button" hidden>앱 설치</button>
-          </div>
-        </section>
-
         <section class="summary-card summary-card-compact update-card" id="update-card" hidden>
           <p class="summary-label">업데이트</p>
           <p class="summary-value" id="update-title">새 버전이 있습니다</p>
@@ -162,6 +153,15 @@
               <p class="muted">프로그램 생성 후 전체 스케줄 참고표가 표시됩니다.</p>
             </div>
           </div>
+
+          <section class="summary-card summary-card-compact install-card" id="install-card" hidden>
+            <p class="summary-label">앱 설치</p>
+            <p class="summary-value" id="install-title">홈 화면에 추가</p>
+            <p class="summary-note" id="install-copy">이 기기에서 더 쉽게 열 수 있도록 설치할 수 있습니다.</p>
+            <div class="install-actions">
+              <button class="primary-button" id="install-app-button" hidden>앱 설치</button>
+            </div>
+          </section>
         </section>
 
         <section class="screen" id="screen-today">
@@ -172,6 +172,16 @@
             </div>
             <button class="primary-button" id="complete-session-button">세션 마무리</button>
           </header>
+
+          <div class="card today-schedule-card">
+            <div class="section-title-row">
+              <p class="card-title">훈련 스케줄 참고표</p>
+              <p class="muted">현재 프로그램 기준 참고표입니다.</p>
+            </div>
+            <div id="today-program-schedule-preview" class="schedule-preview">
+              <p class="muted">프로그램 생성 후 전체 스케줄 참고표가 표시됩니다.</p>
+            </div>
+          </div>
 
           <div class="hero-card">
             <div>

@@ -35,6 +35,7 @@ const summarySessionLabel = document.getElementById("summary-session-label");
 const summaryNote = document.getElementById("summary-note");
 const setupPreview = document.getElementById("setup-preview");
 const programSchedulePreview = document.getElementById("program-schedule-preview");
+const todayProgramSchedulePreview = document.getElementById("today-program-schedule-preview");
 const todaySessionTitle = document.getElementById("today-session-title");
 const todaySessionCopy = document.getElementById("today-session-copy");
 const todayIncrementSummary = document.getElementById("today-increment-summary");
@@ -162,6 +163,11 @@ function showScreen(screenName) {
   navLinks.forEach((link) => {
     link.classList.toggle("active", link.dataset.screen === screenName);
   });
+
+  const summaryCard = summarySessionLabel?.closest(".summary-card");
+  if (summaryCard) {
+    summaryCard.hidden = screenName === "today";
+  }
 }
 
 function isIosLikeDevice() {
@@ -804,12 +810,12 @@ function buildScheduleRows() {
 }
 
 function renderProgramSchedulePreview() {
-  if (!programSchedulePreview) {
+  if (!programSchedulePreview && !todayProgramSchedulePreview) {
     return;
   }
 
   const rows = buildScheduleRows();
-  programSchedulePreview.innerHTML = `
+  const previewMarkup = `
     <div class="schedule-table-wrap">
       <table class="schedule-table">
         <thead>
@@ -838,6 +844,14 @@ function renderProgramSchedulePreview() {
       </table>
     </div>
   `;
+
+  if (programSchedulePreview) {
+    programSchedulePreview.innerHTML = previewMarkup;
+  }
+
+  if (todayProgramSchedulePreview) {
+    todayProgramSchedulePreview.innerHTML = previewMarkup;
+  }
 }
 
 function renderSummary() {
