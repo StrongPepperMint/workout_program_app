@@ -671,7 +671,7 @@ function buildEmptyExerciseRecord(item) {
       weight: set.targetWeight,
       reps: 0,
     })),
-    lastSetRpe: 8,
+    lastSetRpe: "",
     note: "",
     success: true,
     failureChoice: "backoff",
@@ -1079,20 +1079,21 @@ function renderRecordScreen() {
             <p class="record-meta">목표 ${formatWeight(selectedItem.prescribedWeight)} / ${selectedItem.phase === "strength" ? selectedItem.stage : selectedItem.summaryText}</p>
             <p class="record-progress">${navigation.currentIndex + 1} / ${navigation.total} 운동 · 저장 ${navigation.completedCount}개</p>
           </div>
-          <span class="pill">${savedRecord.success ? "기록 준비 완료" : "실패로 판정됨"}</span>
+          <div class="record-header-actions">
+            <button class="secondary-button mini-button target-success-button" type="button" data-target-success="${selectedItem.exercise}">
+              목표 성공
+            </button>
+            <span class="pill">${savedRecord.success ? "기록 준비 완료" : "실패로 판정됨"}</span>
+          </div>
         </div>
 
-      <div class="sets-table">
-        <div class="sets-row header">
-          <span>세트</span>
-          <span>목표</span>
-          <span>실제 중량</span>
-          <span>실제 반복</span>
-        </div>
+      <div class="sets-table compact-record-table">
         ${selectedItem.setPlan.map((set, index) => `
           <div class="sets-row">
-            <span>${set.label}</span>
-            <span>${formatWeight(set.targetWeight)} x ${set.targetReps}</span>
+            <div class="set-line-label">
+              <span class="set-chip">${set.label}</span>
+              <span class="set-target-inline">${formatWeight(set.targetWeight)} x ${set.targetReps}</span>
+            </div>
             <input
               type="number"
               step="0.5"
@@ -1100,19 +1101,21 @@ function renderRecordScreen() {
               data-record-exercise="${selectedItem.exercise}"
               data-record-kind="weight"
               data-set-order="${index + 1}"
+              placeholder="무게"
               value="${savedRecord.actualSets[index].weight}"
             />
-        <input
-          type="number"
-          step="1"
-          inputmode="numeric"
-          data-record-exercise="${selectedItem.exercise}"
-          data-record-kind="reps"
-          data-set-order="${index + 1}"
-          value="${savedRecord.actualSets[index].reps === 0 ? "" : savedRecord.actualSets[index].reps}"
-        />
-      </div>
-    `).join("")}
+            <input
+              type="number"
+              step="1"
+              inputmode="numeric"
+              data-record-exercise="${selectedItem.exercise}"
+              data-record-kind="reps"
+              data-set-order="${index + 1}"
+              placeholder="횟수"
+              value="${savedRecord.actualSets[index].reps === 0 ? "" : savedRecord.actualSets[index].reps}"
+            />
+          </div>
+        `).join("")}
       </div>
 
       <div class="form-grid two-column compact">
@@ -1646,7 +1649,8 @@ function collectSelectedExerciseResult() {
     };
   });
 
-  const lastSetRpe = Number(document.querySelector(`[data-rpe-exercise="${item.exercise}"]`).value);
+  const lastSetRpeInput = document.querySelector(`[data-rpe-exercise="${item.exercise}"]`);
+  const lastSetRpe = lastSetRpeInput.value === "" ? "" : Number(lastSetRpeInput.value);
   const note = document.querySelector(`[data-note-exercise="${item.exercise}"]`).value;
   const activeChoiceButton = document.querySelector("[data-exercise-choice].active-choice");
   const failureChoice = activeChoiceButton?.dataset.exerciseChoice || "backoff";
@@ -2369,6 +2373,34 @@ function attachFailureChoiceListeners(selectedChoice) {
 }
 
 function attachRecordInputListeners() {
+  recordExerciseList.onclick = (event) => {
+    const targetSuccessButton = event.target.closest("[data-target-success]");
+    if (!targetSuccessButton) {
+      return;
+    }
+
+    const exercise = targetSuccessButton.dataset.targetSuccess;
+    const session = buildCurrentSession();
+    const item = session.find((sessionExercise) => sessionExercise.exercise === exercise);
+
+    if (!item) {
+      return;
+    }
+
+    item.setPlan.forEach((set, index) => {
+      const repsInput = recordExerciseList.querySelector(
+        `[data-record-exercise="${exercise}"][data-record-kind="reps"][data-set-order="${index + 1}"]`,
+      );
+
+      if (repsInput) {
+        repsInput.value = set.targetReps;
+      }
+    });
+
+    renderLiveBackoffSummary();
+    autosaveCurrentExerciseDraft();
+  };
+
   recordExerciseList.oninput = () => {
     renderLiveBackoffSummary();
     autosaveCurrentExerciseDraft();

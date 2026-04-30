@@ -537,6 +537,46 @@ input {
   line-height: 1.25;
 }
 
+.record-header-actions {
+  display: grid;
+  gap: 8px;
+  justify-items: end;
+}
+
+.target-success-button {
+  width: auto;
+  min-width: 96px;
+  padding: 7px 10px;
+}
+
+.compact-record-table {
+  gap: 6px;
+}
+
+.set-line-label {
+  display: grid;
+  gap: 2px;
+  align-content: center;
+}
+
+.set-chip {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: #f1ede7;
+  color: var(--text);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.set-target-inline {
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.15;
+}
+
 .backoff-box {
   margin-top: 12px;
   padding: 12px;
@@ -1023,32 +1063,69 @@ input {
   }
 
   .sets-row {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 8px;
-    padding: 10px;
-  }
-
-  .sets-row span:first-child {
-    display: inline-flex;
+    grid-template-columns: minmax(90px, 1.1fr) minmax(0, 1fr) 86px;
     align-items: center;
-    width: fit-content;
-    padding: 6px 10px;
-    border-radius: 999px;
-    background: #f1ede7;
-    color: var(--text);
-    font-size: 0.85rem;
-    font-weight: 700;
-  }
-
-  .sets-row span:nth-child(2) {
-    justify-self: end;
-    text-align: right;
-    color: var(--muted);
-    font-size: 0.92rem;
+    gap: 6px;
+    padding: 8px 6px;
   }
 
   .sets-row input {
-    min-height: 42px;
+    min-height: 34px;
+    padding: 6px 8px;
+    font-size: 0.86rem;
+  }
+
+  #screen-record .record-card {
+    margin-bottom: 10px;
+  }
+
+  #screen-record .card-title {
+    font-size: 0.76rem;
+    margin-bottom: 2px;
+  }
+
+  #screen-record .record-meta,
+  #screen-record .record-progress {
+    font-size: 0.74rem;
+    line-height: 1.14;
+  }
+
+  #screen-record .section-title-row {
+    margin-bottom: 4px;
+    gap: 4px;
+  }
+
+  #screen-record .form-grid.two-column.compact {
+    gap: 5px;
+  }
+
+  #screen-record .form-grid.two-column.compact label {
+    gap: 1px;
+    font-size: 0.7rem;
+  }
+
+  .record-header-actions {
+    gap: 5px;
+  }
+
+  .target-success-button {
+    min-width: 78px;
+    padding: 6px 8px;
+    font-size: 0.74rem;
+  }
+
+  .set-chip {
+    padding: 3px 8px;
+    font-size: 0.74rem;
+  }
+
+  .set-target-inline {
+    font-size: 0.68rem;
+  }
+
+  #screen-record .pill {
+    padding: 3px 7px;
+    font-size: 0.7rem;
   }
 
   .choice-grid,
