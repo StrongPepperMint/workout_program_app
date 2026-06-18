@@ -49,6 +49,9 @@ const historyChartGrid = document.getElementById("history-chart-grid");
 const historyViewSessionButton = document.getElementById("history-view-session");
 const historyViewExerciseButton = document.getElementById("history-view-exercise");
 const exportHistoryButton = document.getElementById("export-history-button");
+const exportBackupButton = document.getElementById("export-backup-button");
+const importBackupButton = document.getElementById("import-backup-button");
+const importBackupInput = document.getElementById("import-backup-input");
 const resetHistoryButton = document.getElementById("reset-history-button");
 const prExerciseFilters = document.getElementById("pr-exercise-filters");
 const prContent = document.getElementById("pr-content");
@@ -135,6 +138,58 @@ const defaultState = {
 
 let appState = loadState();
 
+function hydrateAppState(rawState) {
+  const baseState = structuredClone(defaultState);
+  const nextState = {
+    ...baseState,
+    ...(rawState || {}),
+  };
+
+  nextState.exercisePhases = {
+    ...baseState.exercisePhases,
+    ...(rawState?.exercisePhases || {}),
+  };
+  nextState.readyForStrength = {
+    ...baseState.readyForStrength,
+    ...(rawState?.readyForStrength || {}),
+  };
+  nextState.exerciseProgressions = {
+    ...baseState.exerciseProgressions,
+    ...(rawState?.exerciseProgressions || {}),
+  };
+  nextState.exerciseStrengthStages = {
+    ...baseState.exerciseStrengthStages,
+    ...(rawState?.exerciseStrengthStages || {}),
+  };
+  nextState.completedExercises = {
+    ...baseState.completedExercises,
+    ...(rawState?.completedExercises || {}),
+  };
+  nextState.baselines = EXERCISES.reduce((accumulator, exercise) => {
+    accumulator[exercise] = {
+      ...baseState.baselines[exercise],
+      ...(rawState?.baselines?.[exercise] || {}),
+    };
+    return accumulator;
+  }, {});
+  nextState.latestPrRecords = {
+    ...baseState.latestPrRecords,
+    ...(rawState?.latestPrRecords || {}),
+  };
+  nextState.manualNextSessionWeights = {
+    ...baseState.manualNextSessionWeights,
+    ...(rawState?.manualNextSessionWeights || {}),
+  };
+  nextState.currentSessionRecords = {
+    ...baseState.currentSessionRecords,
+    ...(rawState?.currentSessionRecords || {}),
+  };
+  nextState.prHistory = Array.isArray(rawState?.prHistory) ? rawState.prHistory : [];
+  nextState.history = Array.isArray(rawState?.history) ? rawState.history : [];
+
+  return nextState;
+}
+
 function loadState() {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
@@ -142,10 +197,7 @@ function loadState() {
       return structuredClone(defaultState);
     }
 
-    return {
-      ...structuredClone(defaultState),
-      ...JSON.parse(saved),
-    };
+    return hydrateAppState(JSON.parse(saved));
   } catch (error) {
     return structuredClone(defaultState);
   }
@@ -456,7 +508,7 @@ function getNextStrengthStage(currentStage) {
 }
 
 function shouldAdvanceStrengthStage(exerciseResult) {
-  if (!exerciseResult.success || exerciseResult.failureChoice === "repeat") {
+  if (exerciseResult.failureChoice === "repeat") {
     return false;
   }
 
@@ -1877,6 +1929,7 @@ function applyFailureChoices(workoutResult) {
     const nextStage = shouldAdvanceStrengthStage(exercise)
       ? getNextStrengthStage(currentStage)
       : currentStage;
+    const didAdvanceStage = nextStage !== currentStage;
     appState.exerciseStrengthStages[exercise.exercise] = nextStage;
 
     if (exercise.failureChoice === "repeat") {
@@ -1888,6 +1941,12 @@ function applyFailureChoices(workoutResult) {
     if (exercise.failureChoice === "adjust") {
       appState.exerciseProgressions[exercise.exercise] = currentProgression + 1;
       nextManualWeights[exercise.exercise] = calculateAdjustedWeight(exercise.prescribedWeight);
+      return;
+    }
+
+    if (!exercise.success && didAdvanceStage) {
+      appState.exerciseProgressions[exercise.exercise] = currentProgression;
+      delete nextManualWeights[exercise.exercise];
       return;
     }
 
@@ -2177,6 +2236,43 @@ function exportHistoryAsCsv() {
   link.click();
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
+}
+
+function exportStateAsJson() {
+  const dateStamp = new Date().toISOString().slice(0, 10);
+  const payload = {
+    app: "workout-program-app",
+    exportedAt: new Date().toISOString(),
+    version: 1,
+    state: appState,
+  };
+  const json = JSON.stringify(payload, null, 2);
+  const blob = new Blob([json], { type: "application/json;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `workout-program-backup-${dateStamp}.json`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
+function importStateFromJsonText(jsonText) {
+  const parsed = JSON.parse(jsonText);
+  const importedState = parsed?.state && typeof parsed.state === "object"
+    ? parsed.state
+    : parsed;
+
+  if (!importedState || typeof importedState !== "object") {
+    throw new Error("invalid-backup");
+  }
+
+  appState = hydrateAppState(importedState);
+  saveState();
+  updateSetupInputs();
+  rerender();
+  showScreen("history");
 }
 
 function resetHistoryRecords() {
@@ -2630,6 +2726,31 @@ applyUpdateButton?.addEventListener("click", () => {
 
 exportHistoryButton?.addEventListener("click", () => {
   exportHistoryAsCsv();
+});
+
+exportBackupButton?.addEventListener("click", () => {
+  exportStateAsJson();
+});
+
+importBackupButton?.addEventListener("click", () => {
+  importBackupInput?.click();
+});
+
+importBackupInput?.addEventListener("change", async (event) => {
+  const file = event.target.files?.[0];
+  if (!file) {
+    return;
+  }
+
+  try {
+    const text = await file.text();
+    importStateFromJsonText(text);
+    window.alert("JSON 백업을 성공적으로 복원했습니다.");
+  } catch (error) {
+    window.alert("JSON 백업 파일을 읽지 못했습니다. 올바른 백업 파일인지 확인해 주세요.");
+  } finally {
+    event.target.value = "";
+  }
 });
 
 resetHistoryButton?.addEventListener("click", () => {
